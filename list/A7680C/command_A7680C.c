@@ -436,7 +436,7 @@ static bool cmd_AnalyzeMqttAccq(uint8_t* buf, size_t len, void *para)
 }
 
 // AT+CMQTTCONNECT
-// [ATCmd: AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:11883",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"]
+// [ATCmd: AT+CMQTTCONNECT=0,"tcp://arong.xicp.net:15321",120,1,"123&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"]
 static bool cmd_PackMqttConnect(uint8_t* buf, size_t *len, void *para)
 {
     MqttConnect_Info *connct_info = (MqttConnect_Info *)para;
@@ -793,8 +793,6 @@ static bool cmd_AnalyzeCockRead(uint8_t* buf, size_t len, void *para)
 
 static bool cmd_PackColdStart(uint8_t* buf, size_t *len, void *para)
 {
-    bool *is_started = (bool *)para;
-    *is_started = true;
     *len = 0;
     return true;
 }
@@ -869,14 +867,11 @@ static const tCmd cmdList[] =
     CMD_ADD(CMD_A7680C_CMQTT_TOPIC_SEND      ,   5,  "OK",              "\r\n",  "ERROR",    SendRev,    MqttTopicSend),
     CMD_ADD(CMD_A7680C_CMQTT_PAYLOAD         ,   5,  "\r\n>",           NULL,    "ERROR",    SendRev,    MqttPayload    ),
     CMD_ADD(CMD_A7680C_CMQTT_PAYLOAD_SEND    ,   5,  "OK",              NULL,    "ERROR",    SendRev,    MqttPayloadSend),
-
+    CMD_ADD(CMD_A7680C_CMQTT_PUBISH          ,   5,  "+CMQTTPUB:",     "\r\n",   "ERROR",    SendRev,    MqttPublish),
     CMD_ADD(CMD_A7680C_CMQTT_DISC            ,   5,  "OK",            "\r\n",    "ERROR",    SendRev,    MqttDisc),
     CMD_ADD(CMD_A7680C_CMQTT_REL             ,   5,  "OK",            "\r\n",    "ERROR",    SendRev,    MqttRel),
     CMD_ADD(CMD_A7680C_CMQTT_STOP            ,   5,  "OK",            "\r\n",    "ERROR",    SendRev,    MqttStop),
-
-
-
-    CMD_ADD(CMD_A7680C_CLOCK_READ            ,   5,  NULL,              NULL,    "ERROR",    SendRev,    CockRead),
+    CMD_ADD(CMD_A7680C_CLOCK_READ            ,   5,  "+CCLK:",         "\r\n",    "ERROR",    SendRev,    CockRead),
     CMD_ADD(CMD_A7680C_POWEROFF              ,   5,  "OK",              "\r\n",  "ERROR",    SendRev,   PowerOff),
     CMD_ADD(CMD_A7680C_COLD_START_CHECK      ,   5,  "^SIMST:",         NULL,    NULL,       RecvSend,   ColdStart),
     CMD_ADD(CMD_A7680C_MQTTREV               ,   5,  "+CMQTTRXSTART:",  NULL,    NULL,       RecvSend,   mqttRev),
@@ -972,8 +967,8 @@ bool MqttConfig_Test(void)
         return false;
     }
     //connect
-    //AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:11883",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"
-    char server_addr[] = {"tcp://teeechina.xicp.net:11883"};
+    //AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:21903",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"
+    char server_addr[] = {"tcp://teeechina.xicp.net:21903"};
     char user_name[] = {"8212345678200235&DefaultProductKey"};
     char pass_word[] = {"EF78D2329E1E387DCB5CA110E71E3839A134C3CF"};
     MqttConnect_Info connect_info;

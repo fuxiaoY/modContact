@@ -381,7 +381,7 @@ static bool cmd_ModemUpdateSignal(MctInstance *inst, void *para)
     }
     else
     {
-        //printf("rssi : %u  ber : %u\r\n", signal.rssi, signal.ber);
+        printf("rssi : %u  ber : %u\r\n", signal.rssi, signal.ber);
         NetworkPara_t* networkPara = (NetworkPara_t*)para;
         networkPara->SignalStrength = signal.rssi;
     }
@@ -400,7 +400,7 @@ static bool cmd_CheckCEREG(MctInstance *inst, void *para)
     }
     else
     {
-        //printf("net_info.stat : %d\r\n", net_info.stat);
+        printf("net_info.stat : %d\r\n", net_info.stat);
         NetworkPara_t* networkPara = (NetworkPara_t*)para;
         networkPara->REGstatus = (eRegStatus)net_info.stat;
     }
@@ -441,7 +441,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     /*
     connect
     from : RTConfig.cpp
-    0,"tcp://teeechina.xicp.net:11883",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"
+    0,"tcp://arong.xicp.net:21903",120,1,"1&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A13C3CF"
     */
     //网络连接参数
 
@@ -595,9 +595,7 @@ static bool cmd_NULL(MctInstance *inst, void *para)
 //cold start check
 static bool cmd_coldstartcheck(MctInstance *inst, void *para)
 {
-    bool is_started = false;
-    mct_a7680c_execute(inst,false,CMD_A7680C_COLD_START_CHECK,&is_started);
-    return is_started;
+    return mct_a7680c_execute(inst,false,CMD_A7680C_COLD_START_CHECK,NULL);
 }
 
 static bool cmd_revHandle(MctInstance *inst,void *para)
@@ -608,7 +606,6 @@ static bool cmd_revHandle(MctInstance *inst,void *para)
 
 static const tCmdApi funList[] =
     {
-        {.id = CMD_BOOTUPCLOCK, .fun = cmd_GetZTZEU},
         {.id = CMD_ECHO_CLOSE, .fun = cmd_NULL},
         {.id = CMD_WORKLOCKSET, .fun = cmd_NULL},
         {.id = CMD_MODEM_INFO, .fun = cmd_NULL},
@@ -619,7 +616,7 @@ static const tCmdApi funList[] =
         {.id = CMD_MQTTFLOW, .fun = cmd_mqttflow},
         {.id = CMD_MQTTPUBLISH, .fun = cmd_mqttpublish},
         {.id = CMD_MQTTREV, .fun = cmd_NULL},
-        {.id = CMD_MODEM_CLOCK_GET, .fun = cmd_NULL},
+        {.id = CMD_MODEM_CLOCK_GET, .fun = cmd_GetZTZEU},
         {.id = CMD_MQTTREVPUSH, .fun = cmd_NULL},
         {.id = CMD_MQTTSTOP,   .fun = cmd_mqttStop},
         {.id = CMD_STICKFRAME, .fun = cmd_NULL},
