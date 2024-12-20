@@ -265,7 +265,7 @@ typedef struct
 
 //默认MQTT客户端ID
 #define  MQTT_CLIENT_INDEX 0         
-#define mct_a7680c_execute(inst,is_expected,expected_a7680c_id, para)                  CMD_Execute(inst,is_expected,expected_a7680c_id,CMD_A7680CCmdGet(), CMD_A7680CCmdNumGet(), para)
+#define mct_a7680c_execute(inst,expected_a7680c_id, para)                  CMD_Execute(inst,expected_a7680c_id,CMD_A7680CCmdGet(), CMD_A7680CCmdNumGet(), para)
 
 
 extern tCmd const *CMD_A7680CCmdGet(void);

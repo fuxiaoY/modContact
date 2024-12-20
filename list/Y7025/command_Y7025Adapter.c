@@ -19,7 +19,7 @@
 static bool cmd_GetZTZEU(MctInstance* inst,void *para)
 {
     tWanClock *clock = (tWanClock*)para;
-    if (true == mct_y7025_execute(inst, true, CMD_Y7025_BOOTZTZEU, clock))
+    if (true == mct_y7025_execute(inst,  CMD_Y7025_BOOTZTZEU, clock))
     {
         return true;
     }
@@ -34,7 +34,7 @@ static bool cmd_GetZTZEU(MctInstance* inst,void *para)
 
 static bool cmd_WorklockSet(MctInstance* inst,void *para)
 {
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_WORKLOCK, para))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_WORKLOCK, para))
     {
         ULOG_INFO("Y7025: CMD_Y7025_WORKLOCK failed:");
         return false;
@@ -48,7 +48,7 @@ static bool cmd_WorklockSet(MctInstance* inst,void *para)
 // 关闭回显
 static bool cmd_EchoClose(MctInstance* inst,void *para)
 {
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_ECHO_OFF, NULL))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_ECHO_OFF, NULL))
     {
         ULOG_INFO("Y7025: Cmd CMD_Y7025_ECHO_OFF failed:");
     }
@@ -58,7 +58,7 @@ static bool cmd_EchoClose(MctInstance* inst,void *para)
 static bool cmd_ModemInfoGet(MctInstance* inst,void *para)
 {
     memset(&g_RTStat.wan_imei, 0, sizeof(g_RTStat.wan_imei));
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_IMEI_GET, g_RTStat.wan_imei))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_IMEI_GET, g_RTStat.wan_imei))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
@@ -69,7 +69,7 @@ static bool cmd_ModemInfoGet(MctInstance* inst,void *para)
     }
 
     memset(&g_RTStat.wan_imsi, 0, sizeof(g_RTStat.wan_imsi));
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_IMSI_GET, g_RTStat.wan_imsi))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_IMSI_GET, g_RTStat.wan_imsi))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
@@ -79,7 +79,7 @@ static bool cmd_ModemInfoGet(MctInstance* inst,void *para)
     }
 
     memset(&g_RTStat.wan_ver, 0, sizeof(g_RTStat.wan_ver));
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_VERSION_GET, g_RTStat.wan_ver))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_VERSION_GET, g_RTStat.wan_ver))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
@@ -89,7 +89,7 @@ static bool cmd_ModemInfoGet(MctInstance* inst,void *para)
     }
 
     memset(&g_RTStat.wan_iccid, 0, sizeof(g_RTStat.wan_iccid));
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_NCCID, g_RTStat.wan_iccid))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_NCCID, g_RTStat.wan_iccid))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
@@ -103,7 +103,7 @@ static bool cmd_ModemInfoGet(MctInstance* inst,void *para)
 static bool cmd_PincodeGet(MctInstance* inst,void *para)
 {
     ePincode status;
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_PINCODE_INQUIRE, (void *)&status))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_PINCODE_INQUIRE, (void *)&status))
     {
         ULOG_INFO("Y7025: CMD_Y7025_PINCODE_INQUIRE failed:");
         return false;
@@ -119,7 +119,7 @@ static bool cmd_PincodeSet(MctInstance* inst,void *para)
     ePincode status;
     tPincode code;
 
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_PINCODE_INQUIRE, (void *)&status))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_PINCODE_INQUIRE, (void *)&status))
     {
         ULOG_INFO("Y7025: CMD_Y7025_PINCODE_INQUIRE failed:");
         return false;
@@ -132,7 +132,7 @@ static bool cmd_PincodeSet(MctInstance* inst,void *para)
     {
         // 设置值
         code.data = 1;
-        return mct_y7025_execute(inst, true, CMD_Y7025_PINCODE_SET, (void *)&code.data);
+        return mct_y7025_execute(inst,  CMD_Y7025_PINCODE_SET, (void *)&code.data);
     }
     return true;
 }
@@ -140,7 +140,7 @@ static bool cmd_PincodeSet(MctInstance* inst,void *para)
 // 主动上报网络注册消息
 static bool cmd_CEREGset(MctInstance* inst,void *para)
 {
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_CEREG, para))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_CEREG, para))
     {
         ULOG_INFO("Y7025: CMD_Y7025_CEREG failed:");
         return false;
@@ -158,7 +158,7 @@ static bool cmd_ModemUpdateSignal(MctInstance* inst,void *para)
     tsignalQuality signal;
 
     memset((void *)&signal, 0x00, sizeof(tsignalQuality));
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_SIGNAL_GET, &signal))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_SIGNAL_GET, &signal))
     {
         ULOG_INFO("Y7025: CMD_Y7025_SIGNAL_GET failed:");
         return false;
@@ -175,7 +175,7 @@ static bool cmd_CheckCEREG(MctInstance* inst,void *para)
 {
     NetworkPara_t* networkPara = (NetworkPara_t*)para;
     tRegStus reg;
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_DATA_REGISTER, &reg.value))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_DATA_REGISTER, &reg.value))
     {
         ULOG_INFO("Y7025: CMD_Y7025_DATA_REGISTER failed:");
         return false;
@@ -192,7 +192,7 @@ static bool cmd_CheckCEREG(MctInstance* inst,void *para)
 static bool cmd_CPSMset(MctInstance* inst,void *para)
 {
 
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_CPSMS, NULL))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_CPSMS, NULL))
     {
         ULOG_INFO("Y7025: CMD_Y7025_CPSMS failed:");
         return false;
@@ -205,7 +205,7 @@ static bool cmd_CPSMset(MctInstance* inst,void *para)
 
 static bool cmd_powerOff(MctInstance* inst,void *para)
 {
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_POWER_OFF, NULL))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_POWER_OFF, NULL))
     {
         ULOG_INFO("Y7025: CMD_Y7025_POWER_OFF failed:");
         return false;
@@ -306,13 +306,13 @@ static bool cmd_mqttflow(MctInstance* inst,void *para)
     mqttConnetpara.Serverip = g_RTCfg.ServerURL;
     mqttConnetpara.ServerPort = g_RTCfg.ServerPort;
     mqttConnetpara.ConnectTimeOut = g_RTCfg.ConnectTimeOut;
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_MQTTNEW, &mqttConnetpara))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTNEW, &mqttConnetpara))
     {
         ULOG_INFO("Y7025: CMD_Y7025_MQTTNEW failed:");
         return false;
     }
     mqttconnnack_t mqttconnnackpara;
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_MQTTCON, &mqttconnnackpara))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTCON, &mqttconnnackpara))
     {
         ULOG_INFO("Y7025: CMD_Y7025_MQTTCON failed:");
         return false;
@@ -326,12 +326,12 @@ static bool cmd_mqttflow(MctInstance* inst,void *para)
         }
     }
 
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_MQTTSUB, g_MQTopic.Recv))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTSUB, g_MQTopic.Recv))
     {
         ULOG_INFO("Y7025: CMD_Y7025_MQTTSUB g_MQTopic.Resp failed:");
         return false;
     }
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_MQTTSUB, g_MQTopic.ConfigDn))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTSUB, g_MQTopic.ConfigDn))
     {
         ULOG_INFO("Y7025: CMD_Y7025_MQTTSUB g_MQTopic.ConfigDn failed:");
         return false;
@@ -341,7 +341,7 @@ static bool cmd_mqttflow(MctInstance* inst,void *para)
 static bool cmd_mqttpublish(MctInstance* inst,void *para)
 {
     
-    if (false == mct_y7025_execute(inst, true, CMD_Y7025_MQTTPUB, para))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTPUB, para))
     {
         ULOG_INFO("Y7025: CMD_Y7025_MQTTPub failed:");
         return false;
@@ -352,7 +352,7 @@ static bool cmd_mqttpublish(MctInstance* inst,void *para)
 static bool cmd_ClockGet(MctInstance* inst,void *para)
 {
     tWanClock *clock = (tWanClock*)para;
-    if (true == mct_y7025_execute(inst, true, CMD_Y7025_CLOCK_GET, clock))
+    if (true == mct_y7025_execute(inst, CMD_Y7025_CLOCK_GET, clock))
     {
         return true;
     }
@@ -367,7 +367,7 @@ static bool cmd_ClockGet(MctInstance* inst,void *para)
 static bool cmd_revHandle(MctInstance *inst,void *para)
 {
 
-    mct_y7025_execute(inst,false,CMD_Y7025_MQTTREV,NULL);
+    mct_y7025_execute(inst,CMD_Y7025_MQTTREV,NULL);
     return true;
 }
 

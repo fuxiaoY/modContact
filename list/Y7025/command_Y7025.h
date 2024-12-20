@@ -103,7 +103,7 @@
 #define CMD_Y7025_MQTTREV                     (uint16_t)(CMD_Y7025_BOOTZTZEU +  72)
 
           
-#define mct_y7025_execute(inst,is_expected,expected_a7680c_id, para)    CMD_Execute(inst,is_expected,expected_a7680c_id,CMD_Y7025CmdGet(), CMD_Y7025CmdNumGet(), para)
+#define mct_y7025_execute(inst,expected_a7680c_id, para)    CMD_Execute(inst,expected_a7680c_id,CMD_Y7025CmdGet(), CMD_Y7025CmdNumGet(), para)
 
 typedef struct
 {
