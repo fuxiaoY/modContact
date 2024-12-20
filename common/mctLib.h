@@ -12,14 +12,6 @@ extern "C" {
 #include <ctype.h>
 
 
-#define ISSPACE(ch)                                             (ch == ' ' || \
-                                                                    ch == '\n' || \
-                                                                    ch == '\f' || \
-                                                                    ch == '\f' || \
-                                                                    ch == '\r' || \
-                                                                    ch == '\t' || \
-                                                                    ch == '\v')
-
 #define CMD_ADD(index, time, right, subright, error, type, funName) {.id = index, \
                                                                     .timeout = time, \
                                                                     .rightPhase = right, \
