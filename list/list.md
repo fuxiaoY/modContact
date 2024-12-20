@@ -72,8 +72,14 @@ static bool cmd_AnalyzeATcommand(uint8_t* buf, size_t len, void *para)
 ```
 2.构造协议层指令接口：  
 协议使用**tCmd** 结构体来描述，单一指令参数定义如下：  
+**ASCII协议**
 帧ID |超时时间 | 帧头识别字段 | 帧尾识别字段 | 帧错误识别字段 | 帧类型 | 打包&解析函数名   
+
 ```
 CMD_ADD(CMD_CONSOLE_ID_REV, 2,  "$$COMX$$","*#*#",  NULL,  RecvSend,  RevFlow),
-
+```
+**字节流协议**
+帧ID |超时时间 | 帧头识别字段 | 帧头识别字长| 帧尾识别字段 |帧尾识别字长| 帧错误识别字段 |帧错误识别字长| 帧类型 | 打包&解析函数名
+```
+CMD_HEX_ADD(CMD_CONSOLE_ID_REV2,   2,  &header,sizeof(header),      &tail,sizeof(header),       NULL,0,   RecvSend RevHexFlow),
 ```
