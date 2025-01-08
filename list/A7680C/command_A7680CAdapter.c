@@ -108,7 +108,7 @@ static bool cmd_PDP_IPConfig(MctInstance *inst, void *para)
     pdpip_auth.auth_type = NONE;
     for (int i = 0; i < MAX_RETRIES; i++)
     {
-        if (mct_a7680c_execute(inst,, CMD_A7680C_PDP_IPSET, &pdpip_auth) == true)
+        if (mct_a7680c_execute(inst, CMD_A7680C_PDP_IPSET, &pdpip_auth) == true)
         {
             //printf("PDP-IP set successfully!\r\n");
             break;
