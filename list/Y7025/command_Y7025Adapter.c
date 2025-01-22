@@ -311,21 +311,12 @@ static bool cmd_mqttflow(MctInstance* inst,void *para)
         ULOG_INFO("Y7025: CMD_Y7025_MQTTNEW failed:");
         return false;
     }
-    mqttconnnack_t mqttconnnackpara;
-    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTCON, &mqttconnnackpara))
+    //mqttconnnack_t mqttconnnackpara;
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTCON, NULL))
     {
         ULOG_INFO("Y7025: CMD_Y7025_MQTTCON failed:");
         return false;
     }
-    else
-    {
-        if (0 != mqttconnnackpara.return_code || 0 != mqttconnnackpara.socket_id)
-        {
-            ULOG_INFO("Y7025: CMD_Y7025_MQTTCON para failed: %d, %d", mqttconnnackpara.socket_id, mqttconnnackpara.return_code);
-            return false;
-        }
-    }
-
     if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTSUB, g_MQTopic.Recv))
     {
         ULOG_INFO("Y7025: CMD_Y7025_MQTTSUB g_MQTopic.Resp failed:");
