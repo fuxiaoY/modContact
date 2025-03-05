@@ -331,7 +331,7 @@ static bool cmd_mqttflow(MctInstance* inst,void *para)
 }
 static bool cmd_mqttstop(MctInstance* inst,void *para)
 {
-    mct_y7025_execute(inst, true, CMD_Y7025_MQTTCLOSE, NULL);
+    mct_y7025_execute(inst,  CMD_Y7025_MQTTCLOSE, NULL);
     return true;
 }
 
@@ -350,7 +350,7 @@ static bool cmd_ClockGet(MctInstance* inst,void *para)
 {
     tWanClock *clock = (tWanClock*)para;
 /*
-    if (true == mct_y7025_execute(inst, true, CMD_Y7025_CMNTP, clock))
+    if (true == mct_y7025_execute(inst,  CMD_Y7025_CMNTP, clock))
     {
         return true;
     }
@@ -360,7 +360,7 @@ static bool cmd_ClockGet(MctInstance* inst,void *para)
         ULOG_INFO("Y7025: CMD_Y7025_CMNTP failed:");
     }
 */
-    if (true == mct_y7025_execute(inst, true, CMD_Y7025_CLOCK_GET, clock))
+    if (true == mct_y7025_execute(inst,  CMD_Y7025_CLOCK_GET, clock))
     {
         return true;
     }
@@ -375,7 +375,7 @@ static bool cmd_ClockGet(MctInstance* inst,void *para)
 static bool cmd_revHandle(MctInstance *inst,void *para)
 {
 
-    mct_y7025_execute(inst,false,CMD_Y7025_MQTTREV,NULL);
+    mct_y7025_execute(inst,CMD_Y7025_MQTTREV,NULL);
     return true;
 }
 static bool cmd_httpConnect(MctInstance *inst,void *para)
@@ -383,7 +383,7 @@ static bool cmd_httpConnect(MctInstance *inst,void *para)
     httpURL httpurL = {0};
     httpurL.ip = g_RTInfo.UpdateURL;
     httpurL.port = g_RTInfo.UpdatePort;
-    mct_y7025_execute(inst,true,CMD_Y7025_HTTPCREATE,&httpurL);
+    mct_y7025_execute(inst,CMD_Y7025_HTTPCREATE,&httpurL);
     return true;
 }
 
@@ -394,21 +394,21 @@ static bool cmd_httpGet(MctInstance *inst,void *para)
     char range[64] = {0};
     uint32_t startoffset =  httppara->BlockNum *httppara->fileLen;
     uint32_t endoffset = startoffset + httppara->fileLen - 1;
-    mct_y7025_execute(inst,true,CMD_Y7025_HTTPHEADSET,range);
+    mct_y7025_execute(inst,CMD_Y7025_HTTPHEADSET,range);
     //Range:bytes=0-255\r\n
     //application/octet-stream
     //text/plain
     sprintf(range, "Content-Type:application/octet-stream\r\nRange:bytes=%d-%d\r\n", startoffset,endoffset);
-    mct_y7025_execute(inst,true,CMD_Y7025_HTTPHEADSET,range);
-    mct_y7025_execute(inst,true,CMD_Y7025_HTTPHEADGET,NULL);
+    mct_y7025_execute(inst,CMD_Y7025_HTTPHEADSET,range);
+    mct_y7025_execute(inst,CMD_Y7025_HTTPHEADGET,NULL);
 
-    mct_y7025_execute(inst,true,CMD_Y7025_HTTPSEND,httppara);
+    mct_y7025_execute(inst,CMD_Y7025_HTTPSEND,httppara);
     return true;
 }
 static bool cmd_httpClose(MctInstance *inst,void *para)
 {
     http_t *httppara = (http_t*)para;
-    mct_y7025_execute(inst,true,CMD_Y7025_HTTPCLOSE,httppara);
+    mct_y7025_execute(inst,CMD_Y7025_HTTPCLOSE,httppara);
     return true;
 }
 
@@ -431,7 +431,8 @@ static const tCmdApi funList[] =
     {.id = CMD_REV_FLOW,   .fun = cmd_revHandle},
     {.id = CMD_HTTPCONNECT,   .fun = cmd_httpConnect},
     {.id = CMD_HTTPGET,   .fun = cmd_httpGet},
-    {.id = CMD_HTTPCLOSE,   .fun = cmd_httpClose},   
+    {.id = CMD_HTTPCLOSE,   .fun = cmd_httpClose},
+        
 };
 
 tCmdApi const *CMD_Y7025ApiGet(void)

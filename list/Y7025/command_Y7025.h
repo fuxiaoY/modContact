@@ -113,7 +113,7 @@
 #define CMD_Y7025_HTTPCFG                       (uint16_t)(CMD_Y7025_ID_BASE +  83)   
 #define CMD_Y7025_CMNTP                         (uint16_t)(CMD_Y7025_ID_BASE +  84)   
 #define CMD_Y7025_MQTTDSICON                    (uint16_t)(CMD_Y7025_ID_BASE +  85)   
-#define mct_y7025_execute(inst,is_expected,expected_a7680c_id, para)    CMD_Execute(inst,is_expected,expected_a7680c_id,CMD_Y7025CmdGet(), CMD_Y7025CmdNumGet(), para)
+#define mct_y7025_execute(inst,expected_a7680c_id, para)    CMD_Execute(inst,expected_a7680c_id,CMD_Y7025CmdGet(), CMD_Y7025CmdNumGet(), para)
 
 typedef struct
 {
