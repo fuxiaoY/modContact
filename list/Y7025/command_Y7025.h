@@ -66,11 +66,11 @@
 #define CMD_Y7025_APN_SET                           (uint16_t)(CMD_Y7025_ID_BASE + 39)
 #define CMD_Y7025_PDP_OPEN                          (uint16_t)(CMD_Y7025_ID_BASE + 40)
 #define CMD_Y7025_PDP_CLOSE                         (uint16_t)(CMD_Y7025_ID_BASE + 41)
-#define CMD_Y7025_IP_GET                            (uint16_t)(CMD_Y7025_ID_BASE + 42)
-#define CMD_Y7025_TCP_LISTEN_INQUIRE                (uint16_t)(CMD_Y7025_ID_BASE + 43)
-#define CMD_Y7025_TCP_LISTEN_CLOSE                  (uint16_t)(CMD_Y7025_ID_BASE + 44)
-#define CMD_Y7025_TCP_LISTEN_OPEN                   (uint16_t)(CMD_Y7025_ID_BASE + 45)
-#define CMD_Y7025_CONN_INQUIRE                      (uint16_t)(CMD_Y7025_ID_BASE + 46)
+#define CMD_Y7025_DNS                               (uint16_t)(CMD_Y7025_ID_BASE + 42)
+#define CMD_Y7025_TCP_NEW                           (uint16_t)(CMD_Y7025_ID_BASE + 43)
+#define CMD_Y7025_TCP_CONNECT                       (uint16_t)(CMD_Y7025_ID_BASE + 44)
+#define CMD_Y7025_TCP_SEND                          (uint16_t)(CMD_Y7025_ID_BASE + 45)
+#define CMD_Y7025_TCP_CLOSE                         (uint16_t)(CMD_Y7025_ID_BASE + 46)
 #define CMD_Y7025_CONN_OPEN                         (uint16_t)(CMD_Y7025_ID_BASE + 47)
 #define CMD_Y7025_CONN_CLOSE                        (uint16_t)(CMD_Y7025_ID_BASE + 48)
 #define CMD_Y7025_DATALEN_INQUIRE                   (uint16_t)(CMD_Y7025_ID_BASE + 49)
@@ -86,24 +86,34 @@
 #define CMD_Y7025_SUB_VERSION_GET                   (uint16_t)(CMD_Y7025_ID_BASE + 59)
 #define CMD_Y7025_POWER_OFF                         (uint16_t)(CMD_Y7025_ID_BASE + 60)
 
-#define CMD_Y7025_WORKLOCK                          (uint16_t)(CMD_Y7025_ID_BASE + 61)
+#define CMD_Y7025_WORKLOCK                       (uint16_t)(CMD_Y7025_ID_BASE + 61)
 #define CMD_Y7025_CPSMS                          (uint16_t)(CMD_Y7025_ID_BASE + 62)
-#define CMD_Y7025_ECHO_OFF                          (uint16_t)(CMD_Y7025_ID_BASE +  0)
-#define CMD_Y7025_CEREG                          (uint16_t)(CMD_Y7025_ID_BASE +  63)
-#define CMD_Y7025_SIGNAL_GET                        (uint16_t)(CMD_Y7025_ID_BASE + 33)
-#define CMD_Y7025_NCCID                          (uint16_t)(CMD_Y7025_ID_BASE +  64)
-#define CMD_Y7025_CGMM                           (uint16_t)(CMD_Y7025_ID_BASE +  65)
-#define CMD_Y7025_CGMR                           (uint16_t)(CMD_Y7025_ID_BASE +  66)
+#define CMD_Y7025_ECHO_OFF                       (uint16_t)(CMD_Y7025_ID_BASE + 63)
+#define CMD_Y7025_CEREG                          (uint16_t)(CMD_Y7025_ID_BASE + 64)
+#define CMD_Y7025_SIGNAL_GET                     (uint16_t)(CMD_Y7025_ID_BASE + 65)
+#define CMD_Y7025_NCCID                          (uint16_t)(CMD_Y7025_ID_BASE + 66)
+#define CMD_Y7025_CGMM                           (uint16_t)(CMD_Y7025_ID_BASE + 67)
+#define CMD_Y7025_CGMR                           (uint16_t)(CMD_Y7025_ID_BASE + 68)
 
-#define CMD_Y7025_MQTTNEW                    (uint16_t)(CMD_Y7025_ID_BASE +  67)
-#define CMD_Y7025_MQTTCON                    (uint16_t)(CMD_Y7025_ID_BASE +  68)
-#define CMD_Y7025_MQTTSUB                    (uint16_t)(CMD_Y7025_ID_BASE +  69)
-#define CMD_Y7025_MQTTPUB                    (uint16_t)(CMD_Y7025_ID_BASE +  70)
-#define CMD_Y7025_BOOTZTZEU                   (uint16_t)(CMD_Y7025_ID_BASE +  71)
-#define CMD_Y7025_MQTTREV                     (uint16_t)(CMD_Y7025_BOOTZTZEU +  72)
+#define CMD_Y7025_MQTTNEW                       (uint16_t)(CMD_Y7025_ID_BASE +  69)
+#define CMD_Y7025_MQTTCON                       (uint16_t)(CMD_Y7025_ID_BASE +  70)
+#define CMD_Y7025_MQTTSUB                       (uint16_t)(CMD_Y7025_ID_BASE +  71)
+#define CMD_Y7025_MQTTPUB                       (uint16_t)(CMD_Y7025_ID_BASE +  72)
+#define CMD_Y7025_MQTTCLOSE                     (uint16_t)(CMD_Y7025_ID_BASE +  73)
+#define CMD_Y7025_BOOTZTZEU                     (uint16_t)(CMD_Y7025_ID_BASE +  74)
+#define CMD_Y7025_MQTTREV                       (uint16_t)(CMD_Y7025_ID_BASE +  75)
 
-          
-#define mct_y7025_execute(inst,expected_a7680c_id, para)    CMD_Execute(inst,expected_a7680c_id,CMD_Y7025CmdGet(), CMD_Y7025CmdNumGet(), para)
+#define CMD_Y7025_HTTPCREATE                    (uint16_t)(CMD_Y7025_ID_BASE +  76)
+#define CMD_Y7025_HTTPHEADSET                   (uint16_t)(CMD_Y7025_ID_BASE +  77)
+#define CMD_Y7025_HTTPHEADGET                   (uint16_t)(CMD_Y7025_ID_BASE +  78)
+#define CMD_Y7025_HTTPCONTENTSET                (uint16_t)(CMD_Y7025_ID_BASE +  79)
+#define CMD_Y7025_HTTPCONTENTGET                (uint16_t)(CMD_Y7025_ID_BASE +  80)
+#define CMD_Y7025_HTTPSEND                      (uint16_t)(CMD_Y7025_ID_BASE +  81)
+#define CMD_Y7025_HTTPCLOSE                     (uint16_t)(CMD_Y7025_ID_BASE +  82)
+#define CMD_Y7025_HTTPCFG                       (uint16_t)(CMD_Y7025_ID_BASE +  83)   
+#define CMD_Y7025_CMNTP                         (uint16_t)(CMD_Y7025_ID_BASE +  84)   
+#define CMD_Y7025_MQTTDSICON                    (uint16_t)(CMD_Y7025_ID_BASE +  85)   
+#define mct_y7025_execute(inst,is_expected,expected_a7680c_id, para)    CMD_Execute(inst,is_expected,expected_a7680c_id,CMD_Y7025CmdGet(), CMD_Y7025CmdNumGet(), para)
 
 typedef struct
 {
@@ -154,6 +164,12 @@ typedef struct
     uint32_t                      cs;
     uint16_t                      data;
 }tPincode;
+
+typedef struct 
+{
+    char* ip;
+    uint16_t port;
+}httpURL;
 
 
 typedef struct tWanData *ptWanData;

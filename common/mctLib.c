@@ -23,40 +23,46 @@
  */
 bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_dest, uint16_t *offset)
 {
-    const uint8_t *pcmp1 = src;
-    const uint8_t *pcmp2 = dst;
-    uint16_t tmp_len1 = len_src;
-    uint16_t found_len = 0;
-    uint16_t pcmp1_len = 0;
+    const uint8_t *pcmp1 = src;  // 指向源数据块的指针
+    const uint8_t *pcmp2 = dst;  // 指向目标数据块的指针
 
-    while (tmp_len1--)
+    // 如果目标数据块长度大于源数据块长度，直接返回false
+    if (len_dest > len_src)
     {
-        if (*pcmp1 != *pcmp2)
+        *offset = 0;
+        return false;
+    }
+
+    // 遍历源数据块的所有可能起始位置
+    for (uint16_t i = 0; i <= len_src - len_dest; i++)
+    {
+        pcmp1 = (const uint8_t *)src + i;  // 设置源数据块的当前起始位置
+        pcmp2 = dst;  // 重置目标数据块的指针
+
+        // 逐字节比较目标数据块和源数据块的子串
+        uint16_t j;
+        for (j = 0; j < len_dest; j++)
         {
-            if (tmp_len1 + 1 < len_dest)
+            if (*pcmp1 != *pcmp2)
             {
-                *offset = pcmp1_len;
-                return false;
+                break;  // 如果不匹配，跳出内层循环
             }
-            else
-            {
-                pcmp1_len++, pcmp1++, pcmp2 = dst;
-                found_len = 0;
-            }
+            pcmp1++;  // 移动源数据块指针
+            pcmp2++;  // 移动目标数据块指针
         }
-        else
+
+        // 如果内层循环完整执行，说明找到匹配
+        if (j == len_dest)
         {
-            pcmp1_len++, pcmp1++, pcmp2++, found_len++;
-            if (found_len == len_dest)
-            {
-                *offset = pcmp1_len - len_dest;
-                return true;
-            }
+            *offset = i;  // 设置匹配到的偏移位置
+            return true;  // 返回true表示找到匹配
         }
     }
-    *offset = pcmp1_len;
-    return false;
+
+    *offset = len_src;  // 如果没有找到匹配，设置偏移位置为源数据块长度
+    return false;  // 返回false表示没有找到匹配
 }
+
 /**
  * @fn cmd_ComformRes
  * @brief 根据给定阶段确认资源
