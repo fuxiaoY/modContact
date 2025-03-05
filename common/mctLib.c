@@ -23,13 +23,13 @@
  */
 bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_dest, uint16_t *offset)
 {
-    const uint8_t *pcmp1 = src;  // 指向源数据块的指针
-    const uint8_t *pcmp2 = dst;  // 指向目标数据块的指针
+    const uint8_t *pcmp1 = (uint8_t *)src;  // 指向源数据块的指针
+    const uint8_t *pcmp2 = (uint8_t *)dst;  // 指向目标数据块的指针
 
-    // 如果目标数据块长度大于源数据块长度，直接返回false
+    // 如果目标数据块长度大于源数据块长度，设置偏移位置为源数据块长度 直接返回false
     if (len_dest > len_src)
     {
-        *offset = 0;
+        *offset = len_src;
         return false;
     }
 
@@ -37,7 +37,7 @@ bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_d
     for (uint16_t i = 0; i <= len_src - len_dest; i++)
     {
         pcmp1 = (const uint8_t *)src + i;  // 设置源数据块的当前起始位置
-        pcmp2 = dst;  // 重置目标数据块的指针
+        pcmp2 = (uint8_t *)dst;  // 重置目标数据块的指针
 
         // 逐字节比较目标数据块和源数据块的子串
         uint16_t j;
