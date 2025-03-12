@@ -975,7 +975,7 @@ bool MqttConfig_Test(void)
     connect_info.client_index = MQTT_CLIENT_INDEX;
     connect_info.server_addr = server_addr;
     connect_info.keepalive_time = 120;
-    connect_info.clean_session = 1;
+    connect_info.clean_session = 0;
     connect_info.user_name = user_name;
     connect_info.pass_word = pass_word;
     if(CMD_A7680CExecute(CMD_A7680C_CMQTT_CONNECT, (void *)&connect_info) == false)
