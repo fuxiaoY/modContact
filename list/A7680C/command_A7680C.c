@@ -20,7 +20,7 @@
 // AT+CGDCONT?
 static bool cmd_PackPdpRead(uint8_t* buf, size_t* len, void *para)
 {
-    *len = sprintf(buf, "AT+CGDCONT?\r\n");
+    *len = sprintf((char*)buf, "AT+CGDCONT?\r\n");
     return true;
 }
 
@@ -102,7 +102,7 @@ static bool cmd_AnalyzePdpRead(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackPdpConfig(uint8_t* buf, size_t *len, void *para)
 {
     PDP_Context_set *pdp_context = (PDP_Context_set *)para;
-    *len = sprintf(buf, "AT+CGDCONT=%u,%s,%s\r\n", pdp_context->cid, pdp_context->PDP_type, pdp_context->APN);
+    *len = sprintf((char*)buf, "AT+CGDCONT=%u,%s,%s\r\n", pdp_context->cid, pdp_context->PDP_type, pdp_context->APN);
     return true;
 }
 
@@ -115,7 +115,7 @@ static bool cmd_AnalyzePdpConfig(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackPdpIpSet(uint8_t* buf, size_t *len, void *para)
 {
     PDPIP_Auth_Type *pdp_auth_type = (PDPIP_Auth_Type *)para;
-    *len = sprintf(buf, "AT+CGAUTH=%u,%u\r\n", pdp_auth_type->cid, pdp_auth_type->auth_type);
+    *len = sprintf((char*)buf, "AT+CGAUTH=%u,%u\r\n", pdp_auth_type->cid, pdp_auth_type->auth_type);
     return true;
 }
 
@@ -128,7 +128,7 @@ static bool cmd_AnalyzePdpIpSet(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackEchoSwitch(uint8_t* buf, size_t *len, void *para)
 {
     EchoSwitch *echosw = (EchoSwitch *)para;
-    *len = sprintf(buf, "ATE%u\r\n", *echosw);
+    *len = sprintf((char*)buf, "ATE%u\r\n", *echosw);
     return true;
 }
 
@@ -141,7 +141,7 @@ static bool cmd_AnalyzeEchoSwitch(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackCsqReport(uint8_t* buf, size_t *len, void *para)
 {
     CsqReport *Topic = (CsqReport *)para;
-    *len = sprintf(buf, "AT+AUTOCSQ=%u,%u\r\n", Topic->auto_sw, Topic->mode);
+    *len = sprintf((char*)buf, "AT+AUTOCSQ=%u,%u\r\n", Topic->auto_sw, Topic->mode);
     return true;
 }
 
@@ -153,7 +153,7 @@ static bool cmd_AnalyzeCsqReport(uint8_t* buf, size_t len, void *para)
 // AT+CPIN?
 static bool cmd_PackCpinRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CPIN?\r\n");
+    *len = sprintf((char*)buf, "AT+CPIN?\r\n");
     return true;
 }
 
@@ -178,7 +178,7 @@ static bool cmd_AnalyzeCpinRead(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackNitzSwitch(uint8_t* buf, size_t *len, void *para)
 {
     NitzSwitch *Topic = (NitzSwitch *)para;
-    *len = sprintf(buf, "AT+CTZU=%u\r\n", *Topic);
+    *len = sprintf((char*)buf, "AT+CTZU=%u\r\n", *Topic);
     return true;
 }
 
@@ -190,7 +190,7 @@ static bool cmd_AnalyzeNitzSwitch(uint8_t* buf, size_t len, void *para)
 // AT+CIMI
 static bool cmd_PackImsiRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CIMI\r\n");
+    *len = sprintf((char*)buf, "AT+CIMI\r\n");
     return true;
 }
 
@@ -206,7 +206,7 @@ static bool cmd_AnalyzeImsiRead(uint8_t* buf, size_t len, void *para)
 // AT+CGSN
 static bool cmd_PackSnRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CGSN\r\n");
+    *len = sprintf((char*)buf, "AT+CGSN\r\n");
     return true;
 }
 
@@ -222,7 +222,7 @@ static bool cmd_AnalyzeSnRead(uint8_t* buf, size_t len, void *para)
 // AT+CICCID
 static bool cmd_PackIccidRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CICCID\r\n");
+    *len = sprintf((char*)buf, "AT+CICCID\r\n");
     return true;
 }
 
@@ -246,7 +246,7 @@ static bool cmd_AnalyzeIccidRead(uint8_t* buf, size_t len, void *para)
 // AT+CGMM
 static bool cmd_PackModIdRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CGMM\r\n");
+    *len = sprintf((char*)buf, "AT+CGMM\r\n");
     return true;
 }
 
@@ -262,7 +262,7 @@ static bool cmd_AnalyzeModIdRead(uint8_t* buf, size_t len, void *para)
 // AT+CGMR
 static bool cmd_PackFwVerRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CGMR\r\n");
+    *len = sprintf((char*)buf, "AT+CGMR\r\n");
     return true;
 }
 
@@ -286,7 +286,7 @@ static bool cmd_AnalyzeFwVerRead(uint8_t* buf, size_t len, void *para)
 // AT+CSQ
 static bool cmd_PackMeInfoRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CSQ\r\n");
+    *len = sprintf((char*)buf, "AT+CSQ\r\n");
     return true;
 }
 
@@ -329,7 +329,7 @@ static bool cmd_AnalyzeMeInfoRead(uint8_t* buf, size_t len, void *para)
 // AT+CGREG?
 static bool cmd_PackStatusRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CGREG?\r\n");
+    *len = sprintf((char*)buf, "AT+CGREG?\r\n");
     return true;
 }
 
@@ -392,7 +392,7 @@ static bool cmd_AnalyzeStatusRead(uint8_t* buf, size_t len, void *para)
 // AT+CMQTTSTART
 static bool cmd_PackMqttStart(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CMQTTSTART\r\n");
+    *len = sprintf((char*)buf, "AT+CMQTTSTART\r\n");
     return true;
 }
 
@@ -426,7 +426,7 @@ static bool cmd_AnalyzeMqttStart(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttAccq(uint8_t* buf, size_t *len, void *para)
 {
     MqttAccq_Info *Topic = (MqttAccq_Info *)para;
-    *len = sprintf(buf, "AT+CMQTTACCQ=%u,\"%s\",%u\r\n", Topic->client_index, Topic->clientID, Topic->server_type);
+    *len = sprintf((char*)buf, "AT+CMQTTACCQ=%u,\"%s\",%u\r\n", Topic->client_index, Topic->clientID, Topic->server_type);
     return true;
 }
 // OK
@@ -440,7 +440,7 @@ static bool cmd_AnalyzeMqttAccq(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttConnect(uint8_t* buf, size_t *len, void *para)
 {
     MqttConnect_Info *connct_info = (MqttConnect_Info *)para;
-    *len = sprintf(buf, "AT+CMQTTCONNECT=%u,\"%s\",%u,%u,\"%s\",\"%s\"\r\n",
+    *len = sprintf((char*)buf, "AT+CMQTTCONNECT=%u,\"%s\",%u,%u,\"%s\",\"%s\"\r\n",
                          connct_info->client_index, connct_info->server_addr, connct_info->keepalive_time, connct_info->clean_session, connct_info->user_name, connct_info->pass_word);
     return true;
 }
@@ -500,7 +500,7 @@ static bool cmd_AnalyzeMqttConnect(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttSub(uint8_t* buf, size_t *len, void *para)
 {
     MqttSub_Info *Topic = (MqttSub_Info *)para;
-    *len = sprintf(buf, "AT+CMQTTSUB=%u,%u,%u\r\n", Topic->client_index, Topic->reqLength, Topic->qos);
+    *len = sprintf((char*)buf, "AT+CMQTTSUB=%u,%u,%u\r\n", Topic->client_index, Topic->reqLength, Topic->qos);
     return true;
 }
 
@@ -522,7 +522,7 @@ static bool cmd_AnalyzeMqttSub(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttSubSend(uint8_t* buf, size_t *len, void *para)
 {
     char *topic_info = (char *)para;
-    *len = sprintf(buf, "%s\r\n", topic_info);
+    *len = sprintf((char*)buf, "%s\r\n", topic_info);
     return true;
 }
 
@@ -572,7 +572,7 @@ static bool cmd_AnalyzeMqttSubSend(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttTopic(uint8_t* buf, size_t *len, void *para)
 {
     Topic_Info *Topic = (Topic_Info *)para;
-    *len = sprintf(buf, "AT+CMQTTTOPIC=%u,%u\r\n", Topic->client_index, Topic->req_length);
+    *len = sprintf((char*)buf, "AT+CMQTTTOPIC=%u,%u\r\n", Topic->client_index, Topic->req_length);
     return true;
 }
 static bool cmd_AnalyzeMqttTopic(uint8_t* buf, size_t len, void *para)
@@ -593,7 +593,7 @@ static bool cmd_AnalyzeMqttTopic(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttTopicSend(uint8_t* buf, size_t *len, void *para)
 {
     char *topic_info = (char *)para;
-    *len = sprintf(buf, "%s\r\n", topic_info);
+    *len = sprintf((char*)buf, "%s\r\n", topic_info);
     return true;
 }
 
@@ -606,7 +606,7 @@ static bool cmd_AnalyzeMqttTopicSend(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttPayload(uint8_t* buf, size_t *len, void *para)
 {
     Paylaod_Info *Topic = (Paylaod_Info *)para;
-    *len = sprintf(buf, "AT+CMQTTPAYLOAD=%u,%u\r\n", Topic->client_index, Topic->req_length);
+    *len = sprintf((char*)buf, "AT+CMQTTPAYLOAD=%u,%u\r\n", Topic->client_index, Topic->req_length);
     return true;
 }
 static bool cmd_AnalyzeMqttPayload(uint8_t* buf, size_t len, void *para)
@@ -626,7 +626,7 @@ static bool cmd_AnalyzeMqttPayload(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttPayloadSend(uint8_t* buf, size_t *len, void *para)
 {
     char *topic_info = (char *)para;
-    *len = sprintf(buf, "%s\r\n", topic_info);
+    *len = sprintf((char*)buf, "%s\r\n", topic_info);
     return true;
 }
 static bool cmd_AnalyzeMqttPayloadSend(uint8_t* buf, size_t len, void *para)
@@ -638,7 +638,7 @@ static bool cmd_AnalyzeMqttPayloadSend(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttDisc(uint8_t* buf, size_t *len, void *para)
 {
 
-    *len = sprintf(buf, "AT+CMQTTDISC=%d,120\r\n", MQTT_CLIENT_INDEX);
+    *len = sprintf((char*)buf, "AT+CMQTTDISC=%d,120\r\n", MQTT_CLIENT_INDEX);
     return true;
 }
 static bool cmd_AnalyzeMqttDisc(uint8_t* buf, size_t len, void *para)
@@ -650,7 +650,7 @@ static bool cmd_AnalyzeMqttDisc(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttRel(uint8_t* buf, size_t *len, void *para)
 {
 
-    *len = sprintf(buf, "AT+CMQTTREL=%d\r\n", MQTT_CLIENT_INDEX);
+    *len = sprintf((char*)buf, "AT+CMQTTREL=%d\r\n", MQTT_CLIENT_INDEX);
     return true;
 }
 static bool cmd_AnalyzeMqttRel(uint8_t* buf, size_t len, void *para)
@@ -662,7 +662,7 @@ static bool cmd_AnalyzeMqttRel(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttStop(uint8_t* buf, size_t *len, void *para)
 {
 
-    *len = sprintf(buf, "AT+CMQTTSTOP\r\n");
+    *len = sprintf((char*)buf, "AT+CMQTTSTOP\r\n");
     return true;
 }
 static bool cmd_AnalyzeMqttStop(uint8_t* buf, size_t len, void *para)
@@ -676,7 +676,7 @@ static bool cmd_AnalyzeMqttStop(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackMqttPublish(uint8_t* buf, size_t *len, void *para)
 {
     Publish_Info *pub_info = (Publish_Info *)para;
-    *len = sprintf(buf, "AT+CMQTTPUB=%u,%u,%u\r\n", pub_info->client_index, pub_info->qos, pub_info->pub_timeout);
+    *len = sprintf((char*)buf, "AT+CMQTTPUB=%u,%u,%u\r\n", pub_info->client_index, pub_info->qos, pub_info->pub_timeout);
     return true;
 }
 
@@ -725,7 +725,7 @@ static bool cmd_AnalyzeMqttPublish(uint8_t* buf, size_t len, void *para)
 
 static bool cmd_PackCockRead(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CCLK?\r\n");
+    *len = sprintf((char*)buf, "AT+CCLK?\r\n");
     return true;
 }
 
@@ -808,7 +808,7 @@ static bool cmd_AnalyzeColdStart(uint8_t* buf, size_t len, void *para)
 //AT+CPOF=? 关机
 static bool cmd_PackPowerOff(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf(buf, "AT+CPOF=?\r\n");
+    *len = sprintf((char*)buf, "AT+CPOF=?\r\n");
     return true;
 }
 
