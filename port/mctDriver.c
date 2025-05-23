@@ -2,11 +2,25 @@
 #include "../common/mctProcesser.h"
 #include "../../../drivers/driversInclude.h"
 #include "../../../rtosInterface/entry_rtos_api.h"
+#include "../../../common/commonInclude.h"
 #define TIMEOUT_MS 100
 //并不会阻塞整个系统的调度
 void MCT_DELAY(uint32_t time)
 {
     rtosThreadDelayUntil(time);
+}
+
+void MCT_MALLOC(void **buf, uint32_t size)
+{
+    *buf = arnicsMalloc(size);
+}
+void MCT_FREE(void **buf)
+{
+    if(*buf != NULL)
+    {
+        arnicsFree(*buf);
+        *buf = NULL;
+    }
 }
 /* define ------------------------------------------------------------*/
 /* command ----------------------------------------------------------*/

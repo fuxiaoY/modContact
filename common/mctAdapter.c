@@ -5,7 +5,18 @@
 
 bool AT_found(MctInstance *inst)
 {
-    
+    bool cmd_use_malloc, payload_use_malloc = false;
+    if(inst->cmd_cache == NULL)
+    {
+        cmd_use_malloc = true;
+        MCT_MALLOC((void **)&inst->cmd_cache, inst->CMD_MAX_SIZE);
+    }
+    if(inst->payload_cache == NULL)
+    {
+        payload_use_malloc = true;
+        MCT_MALLOC((void **)&inst->payload_cache, inst->PAYLOAD_MAX_SIZE);
+    }
+
     inst->cmd_size = sprintf((char*)inst->cmd_cache, "\r\nATI\r\n");
     inst->mct_write(inst->cmd_cache, inst->cmd_size);
     uint32_t cnt = 0;
@@ -26,6 +37,14 @@ bool AT_found(MctInstance *inst)
                 if (NULL != hexhex(inst->payload_cache, (uint8_t*)mctModemListGet()[i].name, total_len, strlen(mctModemListGet()[i].name)))
                 {
                     inst->api = mctModemListGet()[i].api;
+                    if(cmd_use_malloc)
+                    {
+                        MCT_FREE((void **)&inst->cmd_cache);
+                    }
+                    if(payload_use_malloc)
+                    {
+                        MCT_FREE((void **)&inst->payload_cache);
+                    }
                     return true;
 
                 }
@@ -34,7 +53,14 @@ bool AT_found(MctInstance *inst)
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
         cnt++;
     } while (cnt < (3000 / WAIT_SCHEDULE_TIME_MS));
-
+    if(cmd_use_malloc)
+    {
+        MCT_FREE((void **)&inst->cmd_cache);
+    }
+    if(payload_use_malloc)
+    {
+        MCT_FREE((void **)&inst->payload_cache);
+    }
    return false;
 }
 
@@ -104,16 +130,37 @@ bool mctApiExecute(MctInstance *inst,uint16_t id, void *para)
     {
         return false; // 如果未找到，则返回执行失败
     }
-
+    bool cmd_use_malloc, payload_use_malloc = false;
+    if(inst->cmd_cache == NULL)
+    {
+        cmd_use_malloc = true;
+        // 使用动态内存缓存
+        MCT_MALLOC((void **)&inst->cmd_cache, inst->CMD_MAX_SIZE);
+    }
+    if(inst->payload_cache == NULL)
+    {
+        payload_use_malloc = true;
+        MCT_MALLOC((void **)&inst->payload_cache, inst->PAYLOAD_MAX_SIZE);
+    }
+    bool result = false;
     // 检查找到的命令函数指针是否为空
     if (NULL != inst->api()[index].fun)
     {
         // 如果不为空，则调用命令函数并返回执行结果
-        return inst->api()[index].fun(inst,para);
+        result =  inst->api()[index].fun(inst,para);
+        if(cmd_use_malloc)
+        {
+            MCT_FREE((void **)&inst->cmd_cache);
+        }
+        if(payload_use_malloc)
+        {
+            MCT_FREE((void **)&inst->payload_cache);
+        }
+        return result;
     }
     else
     {
-        return false; // 如果为空，则返回执行失败
+        return result; // 如果为空，则返回执行失败
     }
 }
 /* define ------------------------------------------------------------*/
