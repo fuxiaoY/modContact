@@ -1,3 +1,5 @@
+[English](dataPlat.en.md) | 中文
+
 # dataLink 解耦说明
 
 ## 作用
