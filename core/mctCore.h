@@ -1,21 +1,39 @@
-#ifndef __MCTDEFINITION_H__
-#define __MCTDEFINITION_H__
+/**
+  ******************************************************************************
+  * @file           : mctCore.h
+  * @brief          : modContact core file
+  * 
+  * 
+  * 
+  * @version        : 1.0.2
+  * @date           : 2025-05-26
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 arong.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+#ifndef __MCTCORE_H__
+#define __MCTCORE_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+
+#include "../common/mctLib.h"
+#include "../port/mctDriver.h"
 
 
 #define MAX_FRAMES 5
 #define NULL_CMD_SEEK (int32_t)-1
 
-#define MCT_VERSION "1.0.0"
+#define MCT_VERSION "1.0.2"
 /* typedef -----------------------------------------------------------*/
 typedef enum
 {
@@ -48,8 +66,6 @@ typedef struct {
 } StaticFrameList;
 
 typedef struct MctInstance MctInstance;
-
-/* typedef -----------------------------------------------------------*/
 typedef bool (*cmdFun)(MctInstance* inst,void *para);
 typedef struct
 {
@@ -114,7 +130,13 @@ typedef struct
 
 
 
+extern void initStaticFrameList(StaticFrameList *list);
 
+extern bool CMD_Execute(MctInstance *inst, \
+                int32_t expected_id, \
+                tCmd const *List,uint16_t cmdNum,void *para);
+
+extern void mct_data_reset(MctInstance* pInstance);
 #ifdef __cplusplus
 }
 #endif

@@ -1,7 +1,5 @@
 #include "mctAdapter.h"
-#include "../port/mctDriver.h"
-#include "../list/mctList.h"
-#include "mctLib.h"
+
 
 bool AT_found(MctInstance *inst)
 {
@@ -182,11 +180,3 @@ void mct_init(MctInstance* pInstance,uint8_t *Cmd_cache,size_t cmd_max_size, \
     pInstance->payload_size = 0;
     initStaticFrameList(&pInstance->payload_list);
 }    
-
-void mct_data_reset(MctInstance* pInstance)
-{
-    memset(pInstance->cmd_cache,0,pInstance->CMD_MAX_SIZE);
-    memset(pInstance->payload_cache,0,pInstance->PAYLOAD_MAX_SIZE);
-    pInstance->cmd_size = 0;
-    pInstance->payload_size = 0;
-}

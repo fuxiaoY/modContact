@@ -322,8 +322,6 @@ static bool cmd_AnalyzeMeInfoRead(uint8_t* buf, size_t len, void *para)
     char_ptr = strTopic + 1;
     sscanf(char_ptr, "%2hhu", &(me_info->ber));
     return true;
-    
-   return true;
 }
 
 // AT+CGREG?
@@ -506,7 +504,7 @@ static bool cmd_PackMqttSub(uint8_t* buf, size_t *len, void *para)
 
 static bool cmd_AnalyzeMqttSub(uint8_t* buf, size_t len, void *para)
 {
-    char *str = buf;
+    char *str = (char*)buf;
     if (!strncmp(str, "\r\n>", sizeof("\r\n>")))
     {
         printf("input data here:\r\n");
@@ -577,7 +575,7 @@ static bool cmd_PackMqttTopic(uint8_t* buf, size_t *len, void *para)
 }
 static bool cmd_AnalyzeMqttTopic(uint8_t* buf, size_t len, void *para)
 {
-    char *str = buf;
+    char *str = (char*)buf;
     if (!strncmp(str, "\r\n>", sizeof("\r\n>")))
     {
         printf("input data here:\r\n");
@@ -611,7 +609,7 @@ static bool cmd_PackMqttPayload(uint8_t* buf, size_t *len, void *para)
 }
 static bool cmd_AnalyzeMqttPayload(uint8_t* buf, size_t len, void *para)
 {
-    char *str = buf;
+    char *str = (char*)buf;
     if (!strncmp(str, "\r\n>", sizeof("\r\n>")))
     {
         printf("input data here:\r\n");
@@ -808,7 +806,7 @@ static bool cmd_AnalyzeColdStart(uint8_t* buf, size_t len, void *para)
 //AT+CPOF=? 关机
 static bool cmd_PackPowerOff(uint8_t* buf, size_t *len, void *para)
 {
-    *len = sprintf((char*)buf, "AT+CPOF=?\r\n");
+    *len = sprintf((char*)buf, "AT+CPOF\r\n");
     return true;
 }
 
@@ -844,20 +842,20 @@ static bool cmd_AnalyzemqttRev(uint8_t* buf, size_t len, void *para)
 
 static const tCmd cmdList[] =
 {
-    CMD_ADD(CMD_A7680C_PDP_READ              ,   5,  "+CGDCONT:",       "\r\n",   "ERROR",    SendRev,    PdpRead    ),
-    CMD_ADD(CMD_A7680C_PDP_CONFIG            ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    PdpConfig  ), 
-    CMD_ADD(CMD_A7680C_PDP_IPSET             ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    PdpIpSet   ), 
-    CMD_ADD(CMD_A7680C_ECHO_SWITCH           ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    EchoSwitch ),
-    CMD_ADD(CMD_A7680C_CSQ_AUTO_REPORT       ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    CsqReport  ),
-    CMD_ADD(CMD_A7680C_CPIN_READ             ,   5,  "+CPIN:",          "\r\n",   "ERROR",    SendRev,    CpinRead   ), 
-    CMD_ADD(CMD_A7680C_NITZ_TIMEUPDATE_SWITCH,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    NitzSwitch ), 
-    CMD_ADD(CMD_A7680C_IMSI_READ             ,   5,  NULL,              NULL,     "ERROR",    SendRev,    ImsiRead   ),
-    CMD_ADD(CMD_A7680C_SN_READ               ,   5,  NULL,              NULL,     "ERROR",    SendRev,    SnRead     ),
-    CMD_ADD(CMD_A7680C_ICCID_READ            ,   5,  "+ICCID",          "\r\n",   "ERROR",    SendRev,    IccidRead  ), 
-    CMD_ADD(CMD_A7680C_MODEL_ID_READ         ,   5,  NULL,              NULL,     "ERROR",    SendRev,    ModIdRead  ), 
-    CMD_ADD(CMD_A7680C_FWVERSION_READ        ,   5,  "+CGMR:",          "\r\n",   "ERROR",    SendRev,    FwVerRead  ),
-    CMD_ADD(CMD_A7680C_ME_INFO_READ          ,   5,  "+CSQ: ",          "\r\n",   "ERROR",    SendRev,    MeInfoRead ),
-    CMD_ADD(CMD_A7680C_REGISTER_STATUS_READ  ,   5,  "+CGREG",          "\r\n",   "ERROR",    SendRev,    StatusRead ), 
+    CMD_ADD(CMD_A7680C_PDP_READ              ,   3,  "+CGDCONT:",       "\r\n",   "ERROR",    SendRev,    PdpRead    ),
+    CMD_ADD(CMD_A7680C_PDP_CONFIG            ,   3,  "OK",              "\r\n",   "ERROR",    SendRev,    PdpConfig  ), 
+    CMD_ADD(CMD_A7680C_PDP_IPSET             ,   3,  "OK",              "\r\n",   "ERROR",    SendRev,    PdpIpSet   ), 
+    CMD_ADD(CMD_A7680C_ECHO_SWITCH           ,   3,  "OK",              "\r\n",   "ERROR",    SendRev,    EchoSwitch ),
+    CMD_ADD(CMD_A7680C_CSQ_AUTO_REPORT       ,   3,  "OK",              "\r\n",   "ERROR",    SendRev,    CsqReport  ),
+    CMD_ADD(CMD_A7680C_CPIN_READ             ,   3,  "+CPIN:",          "\r\n",   "ERROR",    SendRev,    CpinRead   ), 
+    CMD_ADD(CMD_A7680C_NITZ_TIMEUPDATE_SWITCH,   3,  "OK",              "\r\n",   "ERROR",    SendRev,    NitzSwitch ), 
+    CMD_ADD(CMD_A7680C_IMSI_READ             ,   3,  NULL,              NULL,     "ERROR",    SendRev,    ImsiRead   ),
+    CMD_ADD(CMD_A7680C_SN_READ               ,   3,  NULL,              NULL,     "ERROR",    SendRev,    SnRead     ),
+    CMD_ADD(CMD_A7680C_ICCID_READ            ,   3,  "+ICCID",          "\r\n",   "ERROR",    SendRev,    IccidRead  ), 
+    CMD_ADD(CMD_A7680C_MODEL_ID_READ         ,   3,  NULL,              NULL,     "ERROR",    SendRev,    ModIdRead  ), 
+    CMD_ADD(CMD_A7680C_FWVERSION_READ        ,   3,  "+CGMR:",          "\r\n",   "ERROR",    SendRev,    FwVerRead  ),
+    CMD_ADD(CMD_A7680C_ME_INFO_READ          ,   3,  "+CSQ: ",          "\r\n",   "ERROR",    SendRev,    MeInfoRead ),
+    CMD_ADD(CMD_A7680C_REGISTER_STATUS_READ  ,   3,  "+CGREG",          "\r\n",   "ERROR",    SendRev,    StatusRead ), 
     CMD_ADD(CMD_A7680C_CMMQTT_START          ,   5,  "+CMQTTSTART:",    "\r\n",   "ERROR",    SendRev,    MqttStart  ), 
     CMD_ADD(CMD_A7680C_CMQTT_ACCQ            ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    MqttAccq   ), 
     CMD_ADD(CMD_A7680C_CMQTT_CONNECT         ,   5,  "+CMQTTCONNECT:",  "\r\n",   "ERROR",    SendRev,    MqttConnect),

@@ -1,12 +1,16 @@
-#include "mctProcesser.h"
-#include "mctLib.h"
-#include "../dataPlat/mctDefinition.h"
-#include "mctAdapter.h"
+#include "mctCore.h"
 
+
+void mct_data_reset(MctInstance* pInstance)
+{
+    memset(pInstance->cmd_cache,0,pInstance->CMD_MAX_SIZE);
+    memset(pInstance->payload_cache,0,pInstance->PAYLOAD_MAX_SIZE);
+    pInstance->cmd_size = 0;
+    pInstance->payload_size = 0;
+}
 /*-------------------------------------------------------------------------------------*/
 
 /*响应列表-----------------------------------------------------------------------------*/
-
 void initStaticFrameList(StaticFrameList *list)
 {
     memset(list, 0, sizeof(StaticFrameList));
@@ -56,7 +60,7 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
             *remain_len = 0;
             return match_error;
         }
-        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
+        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhasefmct_data_reset 也视为正确响应
         if (true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase, expected_cmd->SubRightPhase, &PhaseOffset, &SubphaseOffset))
         {
             if(is_expected)

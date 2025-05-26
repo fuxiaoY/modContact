@@ -16,8 +16,8 @@
  *******************************************************************************
  */
 #include "command_Y7025.h"
-#include "GlobalData.h"
-#include "GlobalDataManager.h"
+
+
 static bool cmd_PackEchoOff(uint8_t* buf, size_t* len, void *para)
 {
     *len = sprintf((char*)buf, "ATE0\r\n");
@@ -226,7 +226,7 @@ static bool cmd_AnalyzeWorklockSet(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackCPSMSSet(uint8_t* buf, size_t* len, void *para)
 {
     // 设置PSM参数，此处将T3412设置为60小时，意思是只要在60小时内至少有一次上报，就不用重新注网。T3324设置为2秒，意思是解除DTR休眠锁后延迟2秒进入PSM休眠
-    *len = sprintf((char*)buf, "AT+CPSMS=1,,,00100100,01000011\r\n");
+    *len = sprintf((char*)buf, "AT+CPSMS=1,,,00000000,00000100\r\n");
     return true;
 }
 
@@ -462,18 +462,19 @@ static bool cmd_AnalyzeMqttNew(uint8_t* buf, size_t len, void *para)
 
 static bool cmd_PackMqttConnect(uint8_t* buf, size_t* len, void *para)
 {
-
+ mqttConnet_t *mqttConnetpara = (mqttConnet_t *)para;
     // mqtt链接id  //客户端ID 字符串  //keepalive  //用户名  //密码
     *len = sprintf((char*)buf, "AT+MQCON=%u,4,\"%s%s\",%u,0,0,,,,,,\"%s\",\"%s\"\r\n",
                          MQTT_ID,
-                         g_RTInfo.ProductKey,
-                         g_RTInfo.DevName,
-                         g_RTCfg.KeepAlive,
-                         g_RTInfo.DevName,
-                         g_RTInfo.DevSecret);
+                         mqttConnetpara->ProductKey,
+                         mqttConnetpara->DeviceName,
+                         mqttConnetpara->KeepAlive,
+                         mqttConnetpara->DeviceName,
+                         mqttConnetpara->DeviceSecret);
 
     return true;
 }
+
 //+MQCONNACK:0,0
 static bool cmd_AnalyzeMqttConnect(uint8_t* buf, size_t len, void *para)
 {
@@ -736,30 +737,32 @@ static bool cmd_PackMqttReceive(uint8_t* buf, size_t* len, void *para)
 {
     *len = 0;    //不打包，只接受数据
     tWanData *WanData = &g_WanData;
-
+    bool mqttWanBuf_Ready = false;
     if (1 == WanData->RevCmdValidFlag)
     {
         printf("\nwan:\r\n"); 
         printf("%.*s\n",256,(char *)WanData->RevCmd);
-     
         switch(WanData->mqttType)
         {
             case topic_ConfigDn:
             {
                 //拿走数据，此处不做打包处理，防止栈溢出
-                memcpy(g_mqttWanBuf, WanData->RevCmd, strlen(WanData->RevCmd));
-                g_mqttWanBuf_Ready = true;
-                mqttWanPub.Topic = g_MQTopic.ConfigUp;
-                mqttWanPub.QOS = 1;
+                memcpy(MCT_PTR(mqttWanBuf), WanData->RevCmd, strlen(WanData->RevCmd));
+                mqttWanBuf_Ready = true;
+                MCT_SET(mqttWanBufReady,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
+                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->Topic = MCT_PTR(mqttCfgUpTopic);
+                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->QOS = 1;
+
             }
             break;
             case topic_Command:
             {
                 //拿走数据，此处不做打包处理，防止栈溢出
-                memcpy(g_mqttWanBuf, WanData->RevCmd, strlen(WanData->RevCmd));
-                g_mqttWanBuf_Ready = true;
-                mqttWanPub.Topic = g_MQTopic.Resp;
-                mqttWanPub.QOS = 1;
+                memcpy(MCT_PTR(mqttWanBuf), WanData->RevCmd, strlen(WanData->RevCmd));
+                mqttWanBuf_Ready = true;
+                MCT_SET(mqttWanBufReady,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
+                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->Topic = MCT_PTR(mqttRspTopic);
+                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->QOS = 1;
             }
             break;
             default:
@@ -770,18 +773,6 @@ static bool cmd_PackMqttReceive(uint8_t* buf, size_t* len, void *para)
     
     return true;
 }
-
-static bool cmd_PackMqttClose(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+MQDISCON=%d\r\n",MQTT_ID);
-    return true;
-}
-//
-static bool cmd_AnalyzeMqttClose(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
 
 /*
 struct tWanData
@@ -907,6 +898,18 @@ static bool cmd_AnalyzeMqttReceive(uint8_t* buf, size_t len, void *para)
     WanData->RevCmdValidFlag = 1; // 标记接收命令有效
     return true;
 }
+
+static bool cmd_PackMqttClose(uint8_t* buf, size_t* len, void *para)
+{
+    *len = sprintf((char*)buf, "AT+MQDISCON=%d\r\n",MQTT_ID);
+    return true;
+}
+//
+static bool cmd_AnalyzeMqttClose(uint8_t* buf, size_t len, void *para)
+{
+    return true;
+}
+
 //HTTPCREATE
 static bool cmd_PackHTTPCREATE(uint8_t* buf, size_t* len, void *para)
 {
@@ -1208,7 +1211,8 @@ static bool cmd_PackMQTTDISCON(uint8_t* buf, size_t* len, void *para)
 //
 static bool cmd_AnalyzeMQTTDISCON(uint8_t* buf, size_t len, void *para)
 {
-    networkPara.REGstatus = resistering;
+    eRegStatus status = resistering;
+    MCT_SET(netStatus,&status,sizeof(eRegStatus));
     return true;
 }
 
