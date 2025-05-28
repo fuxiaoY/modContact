@@ -450,7 +450,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     char user_name[100] = {0};
     uint16_t serverPort = 0;
     MCT_GET(serverPort,&serverPort, sizeof(serverPort));
-    snprintf(server_addr, sizeof(server_addr), "tcp://%s:%u", (char*)MCT_PTR(serverURL),serverPort);
+    snprintf(server_addr, sizeof(server_addr), "%s:%u", (char*)MCT_PTR(serverURL),serverPort);
     snprintf(user_name, sizeof(user_name), "%s&%s",(char*)MCT_PTR(devName), (char*)MCT_PTR(mqttProductKey));
     MqttConnect_Info connect_info;
     connect_info.client_index = MQTT_CLIENT_INDEX;
