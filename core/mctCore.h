@@ -111,6 +111,11 @@ typedef enum
     HeX,
 }tFormat_type;
 
+typedef enum
+{
+    USE_VAR = 0,
+    USE_CB,
+} sticky_type;
 
 typedef struct
 {
@@ -126,6 +131,9 @@ typedef struct
     tFormat_type                    format;
     cmd_Pack                        pack;
     cmd_Analyze                     analyze;
+    sticky_type                     stickytype;
+    void                            *para;
+    void*                            (*get_para)(void);
 }tCmd;
 
 
