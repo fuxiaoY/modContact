@@ -92,23 +92,36 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
         uint16_t PhaseOffset = 0;
         uint16_t SubphaseOffset = 0;
 
-
         // 如果指定了错误阶段且响应符合错误阶段，则返回错误等待状态
         if (NULL != expected_cmd->errorPhase && true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase, NULL, &PhaseOffset, &SubphaseOffset))
         {
-            *remain_len = 0;
+            if (remain_len)
+            {
+                *remain_len = 0;
+            }
             return match_error;
         }
-        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhasefmct_data_reset 也视为正确响应
+        // 如果响应符合正确阶段
         if (true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase, expected_cmd->SubRightPhase, &PhaseOffset, &SubphaseOffset))
         {
-            addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
-
-            *remain_len -= (SubphaseOffset - PhaseOffset);
-            return match_sucess;
+            // 确保偏移有序，防止下溢
+            if (SubphaseOffset >= PhaseOffset)
+            {
+                addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
+                if (remain_len)
+                {
+                    uint16_t delta = (uint16_t)(SubphaseOffset - PhaseOffset);
+                    *remain_len = (*remain_len > delta) ? (uint16_t)(*remain_len - delta) : 0;
+                }
+                return match_sucess;
+            }
+            else
+            {
+                // 非法偏移，视为无匹配
+                return match_null;
+            }
         }
-        //什么都没查询到 
-        *remain_len -= (SubphaseOffset - PhaseOffset);
+        // 没查询到
         return match_null;
     
     }
@@ -117,23 +130,31 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
         uint16_t PhaseOffset = 0;
         uint16_t SubphaseOffset = 0;
 
-
-        // 如果指定了错误阶段且响应符合错误阶段，则返回错误等待状态
         if (NULL != expected_cmd->errorPhase && true == cmd_ComformResUint8(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase,expected_cmd->errorPhaseLen, NULL, 0,&PhaseOffset, &SubphaseOffset))
         {
-            *remain_len = 0;
+            if (remain_len) 
+            {
+                *remain_len = 0;
+            }
             return match_error;
         }
-        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
         if (true == cmd_ComformResUint8(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase,expected_cmd->rightPhaseLen, expected_cmd->SubRightPhase,expected_cmd->SubRightPhaseLen, &PhaseOffset, &SubphaseOffset))
         {
-            addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
-
-            *remain_len -= (SubphaseOffset - PhaseOffset);
-            return match_sucess;
+            if (SubphaseOffset >= PhaseOffset)
+            {
+                addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
+                if (remain_len)
+                {
+                    uint16_t delta = (uint16_t)(SubphaseOffset - PhaseOffset);
+                    *remain_len = (*remain_len > delta) ? (uint16_t)(*remain_len - delta) : 0;
+                }
+                return match_sucess;
+            }
+            else
+            {
+                return match_null;
+            }
         }
-        //什么都没查询到 
-        *remain_len -= (SubphaseOffset - PhaseOffset);
         return match_null;
     }
     else
@@ -170,6 +191,19 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
     uint16_t remain_len = 0;
     bool result = false;
 
+    /* 保护性检查：避免除以零 */
+    uint32_t wait_ms = (WAIT_SCHEDULE_TIME_MS == 0) ? 1U : (uint32_t)WAIT_SCHEDULE_TIME_MS;
+    uint32_t loop_max = 0;
+    if (cmdList[cmdlist_seq_i].timeout > 0) 
+    {
+        uint32_t t_ms = (uint32_t)cmdList[cmdlist_seq_i].timeout * 1000U;
+        loop_max = t_ms / wait_ms;
+    } 
+    else 
+    {
+        loop_max = 0;
+    }
+
     do
     {
         uint16_t single_len = 0;
@@ -194,9 +228,9 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
                 break;
             }
         }
-        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+        MCT_DELAY(wait_ms);
         cnt++;
-    } while (cnt < (cmdList[cmdlist_seq_i].timeout * 1000 / WAIT_SCHEDULE_TIME_MS));
+    } while (cnt < loop_max);
 
     if(remain_len > 0)
     {
@@ -402,14 +436,17 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
             }
             else if(USE_CB == cmdList[i].stickytype)
             {
-                para = cmdList[i].get_para();
+                if (cmdList[i].get_para)
+                {
+                    para = cmdList[i].get_para();
+                }
             }
             else
             {
                 //do nothing
             }
-
-            if (!cmdList[i].analyze(inst->payload_cache + payloadlist->frames[payloadlist_id].startOffset,payloadlist->frames[payloadlist_id].length, para))
+            if (!cmdList[i].analyze(inst->payload_cache + payloadlist->frames[payloadlist_id].startOffset,
+                                    payloadlist->frames[payloadlist_id].length, para))
             {
                 break;
             }
