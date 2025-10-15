@@ -22,32 +22,6 @@ void initStaticFrameList(StaticFrameList *list)
     memset(list, 0, sizeof(StaticFrameList));
 }
 
-static void addFrameToExpectedFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
-{
-
-    list->frames_expected.startOffset = startOffset;
-    list->frames_expected.endOffset = endOffset;
-    list->frames_expected.length = endOffset - startOffset;
-    list->frames_expected.tcmd_id = id;
-    list->frames_expected.status = FRAME_NEW;
-
-    list->have_expected = true;
-}
-static void addFrameToFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
-{
-    if (list->size >= MAX_FRAMES) 
-    {
-        return;
-    }
-    list->frames[list->size].startOffset = startOffset;
-    list->frames[list->size].endOffset = endOffset;
-    list->frames[list->size].length = endOffset - startOffset;
-    list->frames[list->size].tcmd_id = id;
-    list->frames[list->size].status = FRAME_NEW;
-
-    list->size++;
-}
-
 static void clearFrameList(StaticFrameList *list)
 {
     list->size = 0;
@@ -60,6 +34,54 @@ static void clearFrameExpectedFrameList(StaticFrameList *list)
     list->have_expected = false;
     memset(&list->frames_expected, 0, sizeof(list->frames_expected));
 }
+
+static void addFrame(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset, uint16_t id, bool is_expected)
+{
+    if (is_expected)
+    {
+        list->frames_expected.startOffset = startOffset;
+        list->frames_expected.endOffset = endOffset;
+        list->frames_expected.length = (uint16_t)(endOffset - startOffset);
+        list->frames_expected.tcmd_id = id;
+        list->frames_expected.status = FRAME_NEW;
+        list->have_expected = true;
+    }
+    else
+    {
+        if (list->size >= MAX_FRAMES)
+        {
+            return;
+        }
+        list->frames[list->size].startOffset = startOffset;
+        list->frames[list->size].endOffset = endOffset;
+        list->frames[list->size].length = (uint16_t)(endOffset - startOffset);
+        list->frames[list->size].tcmd_id = id;
+        list->frames[list->size].status = FRAME_NEW;
+        list->size++;
+    }
+}
+
+// 统一读取载荷并更新 remain_len 与 payload_size，返回本次读取长度 
+static uint16_t read_payload_once(MctInstance *inst, uint16_t *remain_len)
+{
+    uint16_t single_len = 0;
+    if (NULL == inst || NULL == inst->mct_read || NULL == inst->payload_cache)
+    {
+        return 0;
+    }
+
+    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
+    if (single_len > 0)
+    {
+        inst->payload_size = (uint16_t)(inst->payload_size + single_len);
+        if (remain_len)
+        {
+            *remain_len = (uint16_t)(*remain_len + single_len);
+        }
+    }
+    return single_len;
+}
+
 /*-------------------------------------------------------------------------------------*/
 
 /*帧匹配--------------------------------------------------------------------------------*/
@@ -80,14 +102,7 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
         // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhasefmct_data_reset 也视为正确响应
         if (true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase, expected_cmd->SubRightPhase, &PhaseOffset, &SubphaseOffset))
         {
-            if(is_expected)
-            {
-                addFrameToExpectedFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
-            }
-            else
-            {
-                addFrameToFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
-            }
+            addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
 
             *remain_len -= (SubphaseOffset - PhaseOffset);
             return match_sucess;
@@ -112,14 +127,7 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
         // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
         if (true == cmd_ComformResUint8(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase,expected_cmd->rightPhaseLen, expected_cmd->SubRightPhase,expected_cmd->SubRightPhaseLen, &PhaseOffset, &SubphaseOffset))
         {
-            if(is_expected)
-            {
-                addFrameToExpectedFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
-            }
-            else
-            {
-                addFrameToFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
-            }
+            addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
 
             *remain_len -= (SubphaseOffset - PhaseOffset);
             return match_sucess;
@@ -166,10 +174,9 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
     {
         uint16_t single_len = 0;
 
-        //收帧
-        single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
-        inst->payload_size += single_len;
-        remain_len += single_len;
+        // 收帧
+        single_len = read_payload_once(inst, &remain_len);
+
         //有数据更新，则进入一次判断
         if (single_len > 0)
         {
@@ -227,9 +234,8 @@ static bool all_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t cmdLis
     bool result = false;
 
     // 收帧
-    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
-    inst->payload_size += single_len;
-    remain_len += single_len;
+    single_len = read_payload_once(inst, &remain_len);
+
     // 有数据更新，则进入一次判断
     if (single_len > 0) 
     {
@@ -274,9 +280,8 @@ static bool cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdList, uint16_
     bool result = false;
 
     // 收帧
-    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
-    inst->payload_size += single_len;
-    remain_len += single_len;
+    single_len = read_payload_once(inst, &remain_len);
+
     // 有数据更新，则进入一次判断
     if (single_len > 0) 
     {
