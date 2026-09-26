@@ -71,12 +71,40 @@ extern "C" {
                                      .pack             = cmd_Pack##funName,       \
                                      .analyze          = cmd_Analyze##funName,    \
                                      __VA_ARGS__}
+
+/* 用户自定义切帧 · ASCII 字符串头（切帧类型 CALLBACK）：
+ * 框架按 head_str 定位帧头，再调用 cb 由用户决定帧尾 */
+#define CMD_CUSTOM_ADD(index,time,head_str,cb,cb_arg,type,funName,...)            \
+                                     { .id             = index,                  \
+                                       .timeout        = time,                   \
+                                       .rightPhase     = (void*)(head_str),       \
+                                       .Type           = type,                   \
+                                       .format         = AscII,                  \
+                                       .pack           = cmd_Pack##funName,       \
+                                       .analyze        = cmd_Analyze##funName,    \
+                                       .framing_kind   = FRAMING_CALLBACK,        \
+                                       .framing_spec   = { .user_cb = cb, .user_arg = cb_arg }, \
+                                       __VA_ARGS__}
+
+/* 用户自定义切帧 · Hex 字节头（切帧类型 CALLBACK） */
+#define CMD_CUSTOM_HEX_ADD(index,time,head,headlen,cb,cb_arg,type,funName,...)    \
+                                     { .id             = index,                  \
+                                       .timeout        = time,                   \
+                                       .rightPhase     = (void*)(head),           \
+                                       .rightPhaseLen  = (headlen),              \
+                                       .Type           = type,                   \
+                                       .format         = HeX,                     \
+                                       .pack           = cmd_Pack##funName,       \
+                                       .analyze        = cmd_Analyze##funName,    \
+                                       .framing_kind   = FRAMING_CALLBACK,        \
+                                       .framing_spec   = { .user_cb = cb, .user_arg = cb_arg }, \
+                                       __VA_ARGS__}
                                     
 /*内核辅助函数--------------------------------------------------------------------------*/
 extern bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_dest, uint16_t *offset);
-extern bool cmd_ComformRes(uint8_t *srcaddr, size_t src_len,const char *phase, const char *subphase, \
+extern bool cmd_ComformRes(const uint8_t *srcaddr, size_t src_len,const char *phase, const char *subphase, \
                                                              uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
-extern bool cmd_ComformResUint8(uint8_t *srcaddr, size_t src_len, const uint8_t *phase, size_t phase_len,  \
+extern bool cmd_ComformResUint8(const uint8_t *srcaddr, size_t src_len, const uint8_t *phase, size_t phase_len,  \
                                                              const uint8_t *subphase, size_t subphase_len, \
                                                              uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
 
