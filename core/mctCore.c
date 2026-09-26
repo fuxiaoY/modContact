@@ -150,14 +150,18 @@ static frame_scan_result_t mct_framing_delimiter(const frame_input_t *in,
     return FRAME_SCAN_NO_HEAD;
 }
 
-/* 类型2 ｜ CALLBACK：框架先定位帧头 head_pos,再转调用户回调决定帧尾。
- * 帧头按原始字节查找(sd_Parse),ASCII 字符串头与 Hex 字节头通用。 */
+/* 类型2 ｜ CALLBACK：框架先定位帧头,再把“帧头指针+帧头起长度”交给用户回调。
+ * 帧头按原始字节查找(sd_Parse),ASCII 字符串头与 Hex 字节头通用。
+ * 用户只面对“帧头=偏移0”这一个坐标系；head_pos 换算在此内部完成,不暴露给用户。 */
 static frame_scan_result_t mct_framing_callback(const frame_input_t *in,
                                                 const uint8_t *window, uint16_t len,
                                                 uint16_t *start, uint16_t *end)
 {
     uint16_t head_pos = 0;
     bool head_found = true;
+    uint16_t rel_s = 0;   /* 用户回填：相对帧头 */
+    uint16_t rel_e = 0;
+    frame_scan_result_t r;
 
     if (NULL == in->spec || NULL == in->spec->user_cb)
     {
@@ -174,8 +178,17 @@ static frame_scan_result_t mct_framing_callback(const frame_input_t *in,
         return FRAME_SCAN_NO_HEAD; /* 窗口内无帧头,不打扰用户回调 */
     }
 
-    /* 交由用户回调从 head_pos 起决定帧边界 */
-    return in->spec->user_cb(window, len, head_pos, start, end, in->spec->user_arg);
+    /* 调用用户回调：buffer 顶在帧头第一字节；cb_len 为帧头起可用长度。
+     * 回填的 rel_s/rel_e 相对帧头，再由本函数加回 head_pos 换算成 window 坐标，
+     * 供引擎与边界守卫使用（对用户完全透明）。 */
+    r = in->spec->user_cb(window + head_pos, (uint16_t)(len - head_pos), \
+                          &rel_s, &rel_e, in->spec->user_arg);
+    if (FRAME_SCAN_MATCH == r)
+    {
+        *start = (uint16_t)(head_pos + rel_s);
+        *end   = (uint16_t)(head_pos + rel_e);
+    }
+    return r;
 }
 
 /* 函数表：下标=切帧类型,元素=对应策略函数；仅本文件使用 */
