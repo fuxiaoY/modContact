@@ -33,6 +33,7 @@ extern "C" {
 #include <ctype.h>
 
 
+/* 判断 ch 是否为空白字符 */
 #define ISSPACE(ch)                                                (ch == ' '  || \
                                                                     ch == '\n' || \
                                                                     ch == '\f' || \
@@ -40,10 +41,21 @@ extern "C" {
                                                                     ch == '\r' || \
                                                                     ch == '\t' || \
                                                                     ch == '\v')
-                                    
+
+/* 粘包参数：var 直接给参数变量 */
 #define STICKY_VAR(var) .stickytype=USE_VAR, .para=var
+/* 粘包参数：cb 回调返回参数，签名 void* cb(void) */
 #define STICKY_CB(cb)   .stickytype=USE_CB, .get_para=cb
 
+/* ASCII 命令注册(头+尾定界)
+ * index    : 命令ID
+ * time     : 超时 ms
+ * right    : 成功帧头字符串，NULL 不校验
+ * subright : 成功帧尾字符串，NULL 无
+ * error    : 错误帧字符串，NULL 无
+ * type     : SendRev 先发后收 / RecvSend 先收后发
+ * funName  : 函数后缀
+ * ...      : 粘包参数 STICKY_VAR / STICKY_CB */
 #define CMD_ADD(index, time, right, subright, error, type, funName,...)           \
                                       { .id             = index,                  \
                                         .timeout        = time,                   \
@@ -56,6 +68,18 @@ extern "C" {
                                         .analyze        = cmd_Analyze##funName,   \
                                         __VA_ARGS__}
 
+/* HEX 命令注册(头+尾定界)
+ * index       : 命令ID
+ * time        : 超时 ms
+ * right       : 成功帧头字节序列
+ * rightlen    : 成功帧头字节数
+ * subright    : 成功帧尾字节序列
+ * subrightlen : 成功帧尾字节数
+ * error       : 错误帧字节序列
+ * errorlen    : 错误帧字节数
+ * type        : SendRev 先发后收 / RecvSend 先收后发
+ * funName     : 函数后缀
+ * ...         : 粘包参数 STICKY_VAR / STICKY_CB */
 #define CMD_HEX_ADD(index, time, right,rightlen, subright,subrightlen,            \
                                       error,errorlen, type, funName,...)          \
                                     {.id               = index,                   \
@@ -72,8 +96,15 @@ extern "C" {
                                      .analyze          = cmd_Analyze##funName,    \
                                      __VA_ARGS__}
 
-/* 用户自定义切帧 · ASCII 字符串头（切帧类型 CALLBACK）：
- * 框架按 head_str 定位帧头，再调用 cb 由用户决定帧尾 */
+/* ASCII 自定义切帧：框架定帧头，cb 决定帧尾
+ * index    : 命令ID
+ * time     : 超时 ms
+ * head_str : 帧头字符串
+ * cb       : 切帧回调，返回 MATCH/NEED_MORE/NO_HEAD
+ * cb_arg   : 透传给 cb 的上下文，可 NULL
+ * type     : SendRev 先发后收 / RecvSend 先收后发
+ * funName  : 函数后缀
+ * ...      : 粘包参数 STICKY_VAR / STICKY_CB */
 #define CMD_CUSTOM_ADD(index,time,head_str,cb,cb_arg,type,funName,...)            \
                                      { .id             = index,                  \
                                        .timeout        = time,                   \
@@ -86,7 +117,16 @@ extern "C" {
                                        .framing_spec   = { .user_cb = cb, .user_arg = cb_arg }, \
                                        __VA_ARGS__}
 
-/* 用户自定义切帧 · Hex 字节头（切帧类型 CALLBACK） */
+/* HEX 自定义切帧：框架定帧头，cb 决定帧尾
+ * index   : 命令ID
+ * time    : 超时 ms
+ * head    : 帧头字节序列
+ * headlen : 帧头字节数
+ * cb      : 切帧回调，返回 MATCH/NEED_MORE/NO_HEAD
+ * cb_arg  : 透传给 cb 的上下文，可 NULL
+ * type    : SendRev 先发后收 / RecvSend 先收后发
+ * funName : 函数后缀
+ * ...     : 粘包参数 STICKY_VAR / STICKY_CB */
 #define CMD_CUSTOM_HEX_ADD(index,time,head,headlen,cb,cb_arg,type,funName,...)    \
                                      { .id             = index,                  \
                                        .timeout        = time,                   \
@@ -119,7 +159,7 @@ extern bool cmd_ComformResUint8(const uint8_t *srcaddr, size_t src_len, const ui
  * @param [in] son_len - 子序列的长度。
  * @return uint8_t* - 如果找到子序列，则返回指向母序列中子序列起始位置的指针；否则返回NULL。
  *
- * 该函数用于在一段字节序列（mom）中查找另一段字节序列（son）的首次出现位置。
+ * 该函数用于在一段字节序列(mom)中查找另一段字节序列(son)的首次出现位置。
  * 如果子序列的长度大于母序列的长度，则直接返回NULL。
  * 如果子序列的长度小于或等于母序列的长度，则遍历母序列，逐个比较子序列与母序列中相应位置的字节是否相同。
  * 如果所有字节都相同，则返回当前母序列指针位置；如果遍历完母序列后仍未找到完全相同的子序列，则返回NULL。

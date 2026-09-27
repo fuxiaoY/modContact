@@ -11,8 +11,7 @@ extern "C" {
 
 
 
-#define CMD_MODBUS_RTU_MASTER                           (int32_t)0
-#define CMD_MODBUS_RTU_SLAVE                            (1+CMD_MODBUS_RTU_MASTER)
+
 
 /* ----------------------- Defines ------------------------------------------*/
 #define ADDRESS_BROADCAST                   ( 0 )   /*! Modbus broadcast address. */
